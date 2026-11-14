@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2º Trompete - Treino da Banda</title>
+<style>
+:root{/* ===== CORES (modo claro) ===== */--bg:#f5f0e4;--card:#ffffff;--tx:#1a2338;--mut:#68708a;--ac:#1d3a6e;--acb:#e6ebf6;--bd:#dcd4c0;--onac:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* ===== CORES (modo escuro) ===== */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1525;--card:#172036;--tx:#f2ecdc;--mut:#9aa3bd;--ac:#e3b34c;--acb:#25304e;--bd:#2b3857;--onac:#1a1405}}
+:root[data-theme="dark"]{--bg:#0e1525;--card:#172036;--tx:#f2ecdc;--mut:#9aa3bd;--ac:#e3b34c;--acb:#25304e;--bd:#2b3857;--onac:#1a1405}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:8px 0 2px}.sub{color:var(--mut);margin:0 0 16px;font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px}
+.list button.t{display:flex;width:100%;align-items:center;gap:10px;text-align:left;background:none;border:0;border-bottom:1px solid var(--bd);padding:12px 4px;color:var(--tx);font:inherit;cursor:pointer}
+.list button.t:last-child{border-bottom:0}
+.list .n{flex:1}.list .tag{font-size:.75rem;color:var(--mut)}
+.list .on .n{color:var(--ac);font-weight:700}
+.ok{width:22px;height:22px;border:2px solid var(--bd);border-radius:50%;display:grid;place-items:center;font-size:.8rem;flex:none}
+.done .ok{background:var(--ac);border-color:var(--ac);color:var(--onac)}
+.now{font-weight:700;font-size:1.15rem;margin:0 0 8px}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.time{display:flex;justify-content:space-between;color:var(--mut);font-size:.8rem;font-variant-numeric:tabular-nums}
+button.b{background:var(--acb);color:var(--ac);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;font:inherit;font-weight:600;cursor:pointer}
+button.b.act{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+button.play{width:56px;height:56px;border-radius:50%;background:var(--ac);color:var(--onac);border:0;font-size:1.4rem;cursor:pointer}
+.lab{font-size:.8rem;color:var(--mut);margin-top:12px;display:flex;justify-content:space-between}
+.big{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums}
+.beats{display:flex;gap:6px}.beats i{width:14px;height:14px;border-radius:50%;background:var(--bd)}.beats i.on{background:var(--ac)}
+input[type=number]{width:80px;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+.stat{color:var(--mut);font-size:.85rem;text-align:center}
+</style></head><body><main>
+<h1>🎺 2º Trompete - Treino da Banda</h1>
+<p class="sub">Escolha uma música, ajuste a velocidade e repita os trechos difíceis.</p>
+
+<div class="card list" id="list"></div>
+
+<div class="card">
+ <p class="now" id="now">Escolha uma música</p>
+ <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Posição">
+ <div class="time"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+ <div class="row" style="justify-content:center;gap:14px">
+  <button class="b" id="back" aria-label="Voltar 5 segundos">⏪ 5s</button>
+  <button class="play" id="pp" aria-label="Tocar ou pausar">▶</button>
+  <button class="b" id="fwd" aria-label="Avançar 5 segundos">5s ⏩</button>
+ </div>
+ <div class="lab"><span>Velocidade</span><b id="sv">100%</b></div>
+ <input type="range" id="speed" min="50" max="125" step="5" value="100">
+ <div class="row">
+  <button class="b" id="a">A: —</button><button class="b" id="bb">B: —</button>
+  <button class="b" id="loop">🔁 Repetir A–B</button><button class="b" id="clr">Limpar</button>
+ </div>
+ <div class="row"><button class="b" id="all">🔂 Repetir música toda</button><button class="b" id="count">Contagem 4 tempos: não</button></div>
+ <div class="lab"><span>Volume</span></div>
+ <input type="range" id="vol" min="0" max="100" value="100">
+ <div class="row"><button class="b" id="mark">✓ Marcar como treinada</button></div>
+</div>
+
+<div class="card">
+ <p class="now">Metrônomo</p>
+ <div class="row" style="justify-content:space-between">
+  <div class="big"><span id="bpmv">100</span> <small style="font-size:.8rem;color:var(--mut)">bpm</small></div>
+  <div class="beats" id="beats"><i></i><i></i><i></i><i></i></div>
+  <button class="b" id="met">▶ Ligar</button>
+ </div>
+ <input type="range" id="bpm" min="40" max="200" value="100" style="margin-top:10px">
+</div>
+<p class="stat" id="stat"></p>
+</main>
+<script>
+// ===== LISTA DE MÚSICAS =====
+// Para acrescentar: envie o MP3 para a pasta audio/ e copie uma linha abaixo.
+// id precisa ser único; title é o nome; tag é o rótulo à direita; src é o caminho do arquivo.
+const SONGS=[
+  {id:"conquista-do-paraiso-lenta", title:"Conquista do Paraíso", tag:"lenta", src:"audio/conquista-do-paraiso-lenta.mp3"},
+  {id:"jingle-bells-lenta", title:"Jingle Bells", tag:"lenta", src:"audio/jingle-bells-lenta.mp3"},
+  {id:"moskau-lenta", title:"Moskau", tag:"lenta", src:"audio/moskau-lenta.mp3"},
+  {id:"noite-feliz-lenta", title:"Noite Feliz", tag:"lenta", src:"audio/noite-feliz-lenta.mp3"},
+  {id:"piracicaba-lenta", title:"Piracicaba", tag:"lenta", src:"audio/piracicaba-lenta.mp3"},
+  {id:"pirilume-lenta", title:"Pirilume", tag:"lenta", src:"audio/pirilume-lenta.mp3"},
+  {id:"pobre-menina-lenta", title:"Pobre Menina", tag:"lenta", src:"audio/pobre-menina-lenta.mp3"},
+  {id:"pobre-menina-108bpm", title:"Pobre Menina", tag:"108 bpm", src:"audio/pobre-menina-108bpm.mp3"},
+];
+const $=id=>document.getElementById(id);
+const au=new Audio();au.preservesPitch=true;au.webkitPreservesPitch=true;au.preload="auto";
+let cur=-1,A=null,B=null,loopAB=false,loopAll=false,countIn=false;
+let done={},secs=0;
+try{done=JSON.parse(localStorage.getItem("banda-done")||"{}");secs=+localStorage.getItem("banda-secs")||0}catch(e){}
+const save=()=>{try{localStorage.setItem("banda-done",JSON.stringify(done));localStorage.setItem("banda-secs",secs)}catch(e){}};
+const fmt=s=>{s=Math.max(0,s|0);return (s/60|0)+":"+String(s%60).padStart(2,"0")};
+function render(){
+ $("list").innerHTML=SONGS.map((s,i)=>`<button class="t ${i==cur?"on":""} ${done[s.id]?"done":""}" data-i="${i}"><span class="ok">${done[s.id]?"✓":""}</span><span class="n">${s.title}</span><span class="tag">${s.tag||""}</span></button>`).join("");
+ $("stat").textContent=`${Object.keys(done).length} de ${SONGS.length} músicas treinadas · ${Math.round(secs/60)} min de treino neste aparelho`;
+ $("mark").textContent=cur>=0&&done[SONGS[cur].id]?"✓ Treinada (toque para desmarcar)":"✓ Marcar como treinada";
+}
+function load(i){
+ cur=i;au.src=SONGS[i].src;A=B=null;loopAB=false;$("now").textContent=SONGS[i].title;
+ $("a").textContent="A: —";$("bb").textContent="B: —";$("loop").classList.remove("act");
+ au.playbackRate=$("speed").value/100;render();play();
+}
+async function play(){
+ if(cur<0)return load(0);
+ if(countIn&&au.currentTime<0.5){await clicks(4,60/(+$("bpm").value)*(100/$("speed").value))}
+ au.play().catch(()=>{});
+}
+$("list").onclick=e=>{const b=e.target.closest("button.t");if(b)load(+b.dataset.i)};
+$("pp").onclick=()=>au.paused?play():au.pause();
+au.onplay=()=>$("pp").textContent="⏸";au.onpause=()=>$("pp").textContent="▶";
+au.onloadedmetadata=()=>$("dur").textContent=fmt(au.duration);
+au.ontimeupdate=()=>{
+ $("cur").textContent=fmt(au.currentTime);
+ if(au.duration)$("seek").value=au.currentTime/au.duration*1000;
+ if(loopAB&&A!=null&&B!=null&&au.currentTime>=B)au.currentTime=A;
+};
+au.onended=()=>{if(loopAll){au.currentTime=0;play()}};
+$("seek").oninput=e=>{if(au.duration)au.currentTime=e.target.value/1000*au.duration};
+$("back").onclick=()=>au.currentTime=Math.max(0,au.currentTime-5);
+$("fwd").onclick=()=>au.currentTime=Math.min(au.duration||0,au.currentTime+5);
+$("speed").oninput=e=>{au.playbackRate=e.target.value/100;$("sv").textContent=e.target.value+"%"};
+$("vol").oninput=e=>au.volume=e.target.value/100;
+$("a").onclick=()=>{A=au.currentTime;$("a").textContent="A: "+fmt(A);if(B!=null&&B<=A){B=null;$("bb").textContent="B: —"}};
+$("bb").onclick=()=>{if(A==null)A=0,$("a").textContent="A: 0:00";B=au.currentTime;$("bb").textContent="B: "+fmt(B);loopAB=true;$("loop").classList.add("act");au.currentTime=A};
+$("loop").onclick=()=>{loopAB=!loopAB;$("loop").classList.toggle("act",loopAB)};
+$("clr").onclick=()=>{A=B=null;loopAB=false;$("a").textContent="A: —";$("bb").textContent="B: —";$("loop").classList.remove("act")};
+$("all").onclick=()=>{loopAll=!loopAll;$("all").classList.toggle("act",loopAll)};
+$("count").onclick=()=>{countIn=!countIn;$("count").classList.toggle("act",countIn);$("count").textContent="Contagem 4 tempos: "+(countIn?"sim":"não")};
+$("mark").onclick=()=>{if(cur<0)return;const id=SONGS[cur].id;done[id]?delete done[id]:done[id]=1;save();render()};
+setInterval(()=>{if(!au.paused){secs++;if(secs%10==0){save();render()}}},1000);
+
+// Metrônomo
+let ctx,metOn=false,nextT=0,beat=0,timer;
+function ac(){if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state=="suspended")ctx.resume();return ctx}
+function tick(t,strong){const o=ac().createOscillator(),g=ctx.createGain();o.frequency.value=strong?1500:1000;g.gain.setValueAtTime(.4,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);o.connect(g).connect(ctx.destination);o.start(t);o.stop(t+.06)}
+function clicks(n,sp){return new Promise(r=>{const t0=ac().currentTime+.05;for(let i=0;i<n;i++)tick(t0+i*sp,i==0);setTimeout(r,(n*sp+.05)*1000)})}
+function flash(i){document.querySelectorAll("#beats i").forEach((d,k)=>d.classList.toggle("on",k==i))}
+function sched(){const sp=60/$("bpm").value;while(nextT<ctx.currentTime+.15){tick(nextT,beat%4==0);const b=beat%4,d=(nextT-ctx.currentTime)*1000;setTimeout(()=>metOn&&flash(b),Math.max(0,d));nextT+=sp;beat++}}
+$("met").onclick=()=>{metOn=!metOn;$("met").textContent=metOn?"⏹ Parar":"▶ Ligar";$("met").classList.toggle("act",metOn);
+ if(metOn){ac();beat=0;nextT=ctx.currentTime+.05;timer=setInterval(sched,25)}else{clearInterval(timer);flash(-1)}};
+$("bpm").oninput=e=>$("bpmv").textContent=e.target.value;
+render();
+</script></body></html>
